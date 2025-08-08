@@ -1,0 +1,47 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-xl">
+    <h1 class="text-3xl font-bold text-center text-gray-800">Set Your Initial Balance</h1>
+    <p class="text-center text-gray-600">
+      Please enter your starting balance to begin tracking your expenses.
+    </p>
+    
+    <form [formGroup]="balanceForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <div>
+        <label for="balance" class="block text-sm font-medium text-gray-700">
+          Initial Balance
+        </label>
+        <div class="mt-1">
+          <input 
+            type="number" 
+            id="balance" 
+            placeholder="Enter a number, e.g., 500.00"
+            required
+            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            
+            formControlName="initialBalance"
+          >
+        </div>
+        @if (balanceForm.get('initialBalance')?.invalid && balanceForm.get('initialBalance')?.touched) {
+          <div class="text-red-600 text-sm mt-1">
+            @if (balanceForm.get('initialBalance')?.errors?.['required']) {
+              <div>Balance is required.</div>
+            }
+            @if (balanceForm.get('initialBalance')?.errors?.['min']) {
+              <div>Balance cannot be negative.</div>
+            }
+          </div>
+        }
+      </div>
+      
+      <div>
+        <button 
+          type="submit"
+          [disabled]="balanceForm.invalid"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+        >
+          Save Balance
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

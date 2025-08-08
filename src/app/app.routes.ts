@@ -31,5 +31,12 @@ export const routes: Routes = [
         return import('./pages/home/home').then((m) => m.Home)
     },
 },
+{
+    path: 'set-balance',
+    pathMatch: 'full',
+    loadComponent:() => {
+        return import('./pages/initial-balance/initial-balance').then((m) => m.InitialBalance)
+    },
+},
 
 ];
