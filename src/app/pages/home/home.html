@@ -1,1 +1,137 @@
-<p>home works!</p>
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1 class="header-title">Project Expense Tracking Software</h1>
+    <div class="header-actions">
+      <button class="icon-button" (click)="openModal()">
+  </button>
+      <div class="user-profile">
+        <span>{{ userEmail }}</span>
+        <img [src]="'https://i.pravatar.cc/40?u=' + userEmail" alt="User Avatar">
+      </div>
+    </div>
+  </header>
+
+  <div *ngIf="!isLoading; else loadingTemplate" class="main-content">
+    <div class="content-left">
+      <section class="summary-cards">
+        <div class="card">
+          <p class="card-title">Current Balance</p>
+          <p class="card-value">{{ balance | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+        <div class="card">
+          <p class="card-title">Total Income</p>
+          <p class="card-value">{{ totalIncome | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+        <div class="card">
+          <p class="card-title">Total Expenses</p>
+          <p class="card-value">{{ totalExpenses | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+      </section>
+
+      <section class="chart-section">
+        <div class="section-header">
+          <h2>Latest Transactions</h2>
+          <select><option>Year</option></select>
+        </div>
+        <div class="chart-placeholder">
+          <div class="bar-group"><div class="bar active" style="height: 60%;"></div><div class="bar inactive" style="height: 40%;"></div></div>
+          <div class="bar-group"><div class="bar active" style="height: 50%;"></div><div class="bar inactive" style="height: 35%;"></div></div>
+          <div class="bar-group"><div class="bar active" style="height: 70%;"></div><div class="bar inactive" style="height: 55%;"></div></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="content-right">
+      <div class="transactions-list-container">
+        <div class="section-header">
+          <h2>Latest Transactions</h2>
+          <select><option>Month</option></select>
+        </div>
+        <input type="text" placeholder="Search..." class="search-bar">
+        <ul class="transactions-list">
+  <li *ngFor="let tx of transactions" class="transaction-item">
+    <div class="tx-info">
+      <div>
+        <p class="tx-name">{{ tx.name }}</p>
+        <p class="tx-date">{{ tx.date }}</p>
+      </div>
+    </div>
+    <div class="tx-details">
+      <p class="tx-amount" [ngClass]="{ 'income': tx.type === 'income', 'expense': tx.type === 'expense' }">
+        {{ tx.type === 'expense' ? '-' : '' }}{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
+      </p>
+      <p class="tx-status" [ngClass]="{ 'income': tx.type === 'income', 'expense': tx.type === 'expense' }">
+        {{ tx.type | titlecase }}
+      </p>
+    </div>
+  </li>
+
+  <li *ngIf="!isLoading && transactions.length === 0" class="transaction-item">
+    <p>No recent transactions found.</p>
+  </li>
+</ul>
+      </div>
+    </aside>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-indicator" style="text-align: center; padding: 50px; font-size: 18px;">
+      <p>Loading Dashboard Data...</p>
+    </div>
+  </ng-template>
+</div>
+<div *ngIf="isModalOpen" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Add New Transaction</h2>
+    <p>Choose a type and enter the details below.</p>
+
+    <form [formGroup]="transactionForm" (ngSubmit)="onSubmitTransaction()">
+  <div class="form-group type-selector">
+    <label>
+      <input type="radio" formControlName="type" value="expense">
+      <span>Expense</span>
+    </label>
+    <label>
+      <input type="radio" formControlName="type" value="income">
+      <span>Income</span>
+    </label>
+  </div>
+
+  @if (transactionForm.get('type')?.value === 'income') {
+    <div class="form-group">
+      <label for="incomeDescription">Description</label>
+      <input id="incomeDescription" type="text" formControlName="incomeDescription" placeholder="e.g., Monthly Salary">
+    </div>
+  }
+
+  @if (transactionForm.get('type')?.value === 'expense') {
+    <div class="form-group">
+      <label for="expenseCategory">Category</label>
+      <select id="expenseCategory" formControlName="expenseCategory">
+        <option value="" disabled>Select a category</option>
+        @for(category of expenseCategories; track category) {
+          <option [value]="category">{{ category }}</option>
+        }
+      </select>
+    </div>
+
+    @if (transactionForm.get('expenseCategory')?.value === 'Other') {
+      <div class="form-group custom-expense-input">
+        <label for="customExpenseDescription">Custom Description</label>
+        <input id="customExpenseDescription" type="text" formControlName="customExpenseDescription" placeholder="e.g., Concert Tickets">
+      </div>
+    }
+  }
+
+  <div class="form-group">
+    <label for="amount">Amount</label>
+    <input id="amount" type="number" formControlName="amount" placeholder="0.00">
+  </div>
+  
+  <div class="modal-actions">
+    <button type="button" class="button-secondary" (click)="closeModal()">Cancel</button>
+    <button type="submit" class="button-primary" [disabled]="transactionForm.invalid">Save Transaction</button>
+  </div>
+</form>
+  </div>
+</div>
