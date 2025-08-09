@@ -1,12 +1,19 @@
 <div class="dashboard-container">
+  <app-expand-menu [isMenuOpen]="isMenuOpen" (menuClosed)="closeMenu()"></app-expand-menu>
+  <div class="content-overlay" *ngIf="isMenuOpen" (click)="closeMenu()"></div>
+
   <header class="dashboard-header">
+    <button class="icon-button" (click)="openMenu()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
     <h1 class="header-title">Project Expense Tracking Software</h1>
     <div class="header-actions">
       <button class="icon-button" (click)="openModal()">
-  </button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
       <div class="user-profile">
         <span>{{ userEmail }}</span>
-        <img [src]="'https://i.pravatar.cc/40?u=' + userEmail" alt="User Avatar">
+        <svg class="user-avatar" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </div>
     </div>
   </header>
@@ -30,13 +37,9 @@
 
       <section class="chart-section">
         <div class="section-header">
-          <h2>Latest Transactions</h2>
-          <select><option>Year</option></select>
-        </div>
-        <div class="chart-placeholder">
-          <div class="bar-group"><div class="bar active" style="height: 60%;"></div><div class="bar inactive" style="height: 40%;"></div></div>
-          <div class="bar-group"><div class="bar active" style="height: 50%;"></div><div class="bar inactive" style="height: 35%;"></div></div>
-          <div class="bar-group"><div class="bar active" style="height: 70%;"></div><div class="bar inactive" style="height: 55%;"></div></div>
+          <h2>Expense Breakdown</h2> </div>
+        <div class="chart-container">
+          <canvas id="expenseChart"></canvas>
         </div>
       </section>
     </div>
@@ -44,38 +47,37 @@
     <aside class="content-right">
       <div class="transactions-list-container">
         <div class="section-header">
-          <h2>Latest Transactions</h2>
-          <select><option>Month</option></select>
+          <h2>Transaction History</h2>
         </div>
-        <input type="text" placeholder="Search..." class="search-bar">
+        
         <ul class="transactions-list">
-  <li *ngFor="let tx of transactions" class="transaction-item">
-    <div class="tx-info">
-      <div>
-        <p class="tx-name">{{ tx.name }}</p>
-        <p class="tx-date">{{ tx.date }}</p>
-      </div>
-    </div>
-    <div class="tx-details">
-      <p class="tx-amount" [ngClass]="{ 'income': tx.type === 'income', 'expense': tx.type === 'expense' }">
-        {{ tx.type === 'expense' ? '-' : '' }}{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
-      </p>
-      <p class="tx-status" [ngClass]="{ 'income': tx.type === 'income', 'expense': tx.type === 'expense' }">
-        {{ tx.type | titlecase }}
-      </p>
-    </div>
-  </li>
+          <li *ngFor="let tx of transactions" class="transaction-item">
+            <div class="tx-info">
+              <div>
+                <p class="tx-name">{{ tx.name }}</p>
+                <p class="tx-date">{{ tx.date | date: 'mediumDate' }}</p>
+              </div>
+            </div>
+            <div class="tx-details">
+              <p class="tx-amount" [ngClass]="{ 'income': tx.type === 'income', 'expense': tx.type === 'expense' }">
+                {{ tx.type === 'expense' ? '-' : '' }}{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
+              </p>
+              <p class="tx-status" [ngClass]="{ 'income': tx.type === 'income', 'expense': tx.type === 'expense' }">
+                {{ tx.type | titlecase }}
+              </p>
+            </div>
+          </li>
 
-  <li *ngIf="!isLoading && transactions.length === 0" class="transaction-item">
-    <p>No recent transactions found.</p>
-  </li>
-</ul>
+          <li *ngIf="!isLoading && transactions.length === 0" class="transaction-item">
+            <p>No recent transactions found.</p>
+          </li>
+        </ul>
       </div>
     </aside>
   </div>
 
   <ng-template #loadingTemplate>
-    <div class="loading-indicator" style="text-align: center; padding: 50px; font-size: 18px;">
+    <div class="loading-indicator">
       <p>Loading Dashboard Data...</p>
     </div>
   </ng-template>
