@@ -38,5 +38,12 @@ export const routes: Routes = [
         return import('./pages/initial-balance/initial-balance').then((m) => m.InitialBalance)
     },
 },
+{
+    path: 'loan',
+    pathMatch: 'full',
+    loadComponent:() => {
+        return import('./pages/loansprediction/loansprediction').then((m) => m.Loansprediction)
+    },
+},
 
 ];

@@ -25,4 +25,7 @@ export class ExpandMenu {
     this.router.navigate(['/login']);
     this.snackBar.open('You have been logged out.', 'Close', { duration: 3000 });
   }
+  loanPredictor(): void {
+    this.router.navigate(['/loan']);
+  }
 }
